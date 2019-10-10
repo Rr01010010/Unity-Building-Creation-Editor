@@ -18,22 +18,11 @@ public class NodeCreatorEditor : UnityEditor.Editor
         {
             string serializelist = JsonConvert.SerializeObject(myScript.WallNodes);
 
-
-            string path = Application.persistentDataPath;//  "C:\\01010010 K\\Repositories\\mmo.clientv2\\Assets";//@"c:\temp\MyTest.txt"''
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "Nodes.txt");
-            //Debug.Log(path);
-            using (StreamWriter sw = File.CreateText(path))
-            {
-                sw.WriteLine(serializelist);
-            }
+            NodeCreator.WriteJsonAtJsonsFolder(serializelist, myScript.PathToJsonsFolder, myScript.LevelName, "Nodes.txt");
         }
         if (GUILayout.Button("Download Nodes"))
         {
-            string path = Application.persistentDataPath;//  "C:\\01010010 K\\Repositories\\mmo.clientv2\\Assets";//@"c:\temp\MyTest.txt"''
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "Nodes.txt");
-
+            string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "Nodes.txt");
 
             if (File.Exists(path))
             {
@@ -61,6 +50,8 @@ public class NodeCreatorEditor : UnityEditor.Editor
 #endregion
 public class NodeCreator : MonoBehaviour
 {
+    public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
+    public string LevelName = "";
 
     public GameObject PrefabWall;
     public Camera Camera;
@@ -254,4 +245,30 @@ public class NodeCreator : MonoBehaviour
     }
 
     #endregion
+
+
+
+    public static void WriteJsonAtJsonsFolder(string serializelist, string pathToJsonsFolder, string levelName, string nameOfFile)
+    {
+        string path = ReturnPathToJsonFile(pathToJsonsFolder, levelName, nameOfFile);
+
+        Debug.Log(path);
+        using (StreamWriter sw = File.CreateText(path))
+        {
+            sw.WriteLine(serializelist);
+        }
+    }
+
+    public static string ReturnPathToJsonFile(string pathToJsonsFolder, string levelName, string nameOfFile)
+    {
+        string path = Directory.GetCurrentDirectory();
+        path = System.IO.Path.Combine(path, pathToJsonsFolder, levelName);
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        path = System.IO.Path.Combine(path, nameOfFile);
+        return path.Replace('/', @"\"[0]);
+    }
+
 }

@@ -18,11 +18,7 @@ public class RoomCreatorEditor : UnityEditor.Editor
         RoomCreator myScript = (RoomCreator)target;
         if (GUILayout.Button("Download ListNodes"))
         {
-            string path = Application.persistentDataPath;//  "C:\\01010010 K\\Repositories\\mmo.clientv2\\Assets";//@"c:\temp\MyTest.txt"''
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "ListNodes.txt");
-
-
+            string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
 
             if (File.Exists(path))
             {
@@ -131,6 +127,9 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
 public class RoomCreator : MonoBehaviour
 {
+    public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
+    public string LevelName = "";
+
     public Transform WallPrefab { get => _wallPrefab_1x1x1; set => _wallPrefab_1x1x1 = value; }
     [SerializeField] private Transform _wallPrefab_1x1x1;
     public Transform PrefabNodeContainer { get => _prefabNodeContainer; set => _prefabNodeContainer = value; }

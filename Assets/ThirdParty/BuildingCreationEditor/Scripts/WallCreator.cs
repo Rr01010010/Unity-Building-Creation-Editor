@@ -19,10 +19,7 @@ public class WallCreatorEditor : UnityEditor.Editor
         WallCreator myScript = (WallCreator)target;
         if (GUILayout.Button("Download Nodes"))
         {
-            string path = Application.persistentDataPath;//  "C:\\01010010 K\\Repositories\\mmo.clientv2\\Assets";//@"c:\temp\MyTest.txt"''
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "Nodes.txt");
-
+            string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "Nodes.txt");
 
             if (File.Exists(path))
             {
@@ -70,17 +67,6 @@ public class WallCreatorEditor : UnityEditor.Editor
         }
         if (GUILayout.Button("Save ListNodes"))
         {
-            /*
-            for (int i = 0; i < myScript.LinkNodes.Count; i++)
-            {
-                if (!myScript.LinkNodes[i].save)
-                {
-                    myScript.LinkNodes.RemoveAt(i);
-                    i--;
-                }
-            }*/
-
-
             List<LinkNodeElement> ThirdStageLinks = new List<LinkNodeElement>();
 
             foreach (WallCreator.LinkNodeElement elem in myScript.LinkNodes)
@@ -91,7 +77,6 @@ public class WallCreatorEditor : UnityEditor.Editor
                 newElem.toNode = new List<Vector3>();
                 foreach (int idx in elem.indexToNode)
                 {
-                    Debug.Log($"Count = {myScript.LinkNodes.Count}, idx = {idx}");
                     Vector3 vect = myScript.LinkNodes[idx].myBox.transform.position;
                     newElem.toNode.Add(vect);
                 }
@@ -102,21 +87,12 @@ public class WallCreatorEditor : UnityEditor.Editor
 
             string serializelist = JsonConvert.SerializeObject(ThirdStageLinks);
 
-            string path = Application.persistentDataPath;
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "ListNodes.txt");
+            NodeCreator.WriteJsonAtJsonsFolder(serializelist, myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
 
-            Debug.Log(path);
-            using (StreamWriter sw = File.CreateText(path))
-            {
-                sw.WriteLine(serializelist);
-            }
         } 
         if (GUILayout.Button("Download ListNodes")) 
         {
-            string path = Application.persistentDataPath;//  "C:\\01010010 K\\Repositories\\mmo.clientv2\\Assets";//@"c:\temp\MyTest.txt"''
-            path = path.Replace('/', @"\"[0]);
-            path = System.IO.Path.Combine(path, "ListNodes.txt");
+            string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
 
 
             if (File.Exists(path))
@@ -232,6 +208,8 @@ public class WallCreatorEditor : UnityEditor.Editor
 #endregion
 public class WallCreator : MonoBehaviour
 {
+    public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
+    public string LevelName = "";
     public Vector3 PositionOfNewPoint;
     //public int CountNode;
     public Transform PrefabNodeContainer;
