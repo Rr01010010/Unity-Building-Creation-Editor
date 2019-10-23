@@ -216,6 +216,7 @@ public class WallCreator : MonoBehaviour
     public NodeController PrefabNode;
     public Camera Camera;
 
+    [SerializeField] private TopMouseControl MouseContol;
     public Transform NodeContainer { get => _nodeContainer; set => _nodeContainer = value; }
     [SerializeField] private Transform _nodeContainer;
 
@@ -347,14 +348,21 @@ public class WallCreator : MonoBehaviour
     [SerializeField] private Color GizmoColors;
 
 
+    #region DrawSight
+    private void DrawSight()
+    {
+        Gizmos.color = SightColor;
+
+        Camera.transform.position = new Vector3(MouseContol.Sight.x, Camera.transform.position.y, MouseContol.Sight.z);
+        Gizmos.DrawCube(Camera.transform.position - new Vector3(0,1,0), new Vector3(CellSize, CellSize, CellSize));
+    }
+    #endregion
+
     #region DrawLinesWithPoints
     private void DrawLinesOfPoints()
     {
         Gizmos.color = GizmoColors;
 
-
-        //if (LinkNodes != null)
-        //for(int i = 0; i < LinkNodes.Count; i++)
         if(NodeContainer != null && NodeContainer.childCount == LinkNodes.Count)
         foreach(LinkNodeElement elem in LinkNodes)
         {
@@ -366,9 +374,21 @@ public class WallCreator : MonoBehaviour
     }
     #endregion
     private void OnDrawGizmos()
-    {
+    {        
+        //MouseContol.Sight = new Vector3(MouseContol.Sight.x, Camera.transform.position.y - GridSize.y, MouseContol.Sight.z);
+
         DrawLinesOfPoints();
+        DrawSight();
     }
 
     #endregion
+
+
+
+    #region Gizmos
+    [Header("Gizmos")]
+    [SerializeField] private Color SightColor;
+    public float CellSize = 1;
+    #endregion
+
 }

@@ -292,6 +292,7 @@ GameObject:
   - component: {fileID: 1052616518}
   - component: {fileID: 1052616517}
   - component: {fileID: 1052616520}
+  - component: {fileID: 1052616521}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -376,15 +377,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20e20d93d7c2fdf41a0d0ed6a296dd5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PrefabWall: {fileID: 0}
+  PathToJsonsFolder: Assets/ThirdParty/RoomCreationSystem/Jsons
+  LevelName: 
+  MouseContol: {fileID: 1052616521}
+  WallNodes: []
   Camera: {fileID: 1052616518}
   _speedMovement: 10
-  Sight: {x: 0, y: 0, z: 0}
+  NodeColors: {r: 0.6784314, g: 1, b: 0, a: 1}
+  CellSize: 1
+  GridSize: {x: 140, y: 50, z: 180}
+  GridColor: {r: 1, g: 1, b: 1, a: 0.60784316}
+  AvailableLinks: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 0.34901962}
+--- !u!114 &1052616521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1052616516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c5393f5f7a5868488d22b34014aa4bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 1052616518}
+  _sight: {x: 0, y: 0, z: 0}
   SensetiveX: 1
   SensetiveY: 1
-  GizmoColors: {r: 1, g: 1, b: 1, a: 0.48235294}
-  CellSize: 1
-  GridSize: {x: 140, y: 0, z: 180}
-  NodeColors: {r: 0.6784314, g: 1, b: 0, a: 1}
-  WallNodes: []
-  AvailableLinks: {r: 0.3773585, g: 0.3773585, b: 0.3773585, a: 0.34901962}
