@@ -171,15 +171,42 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
 
         float yRot = ConverterMesh.AngleBtwVectors(keys[key].direction, FrontSide - Back, new Vector3(1, 0, 1));
+
+        float[,] Normal = new float[1, 4];
+        Normal[0, 0] = keys[key].direction.x;
+        Normal[0, 1] = keys[key].direction.y;
+        Normal[0, 2] = keys[key].direction.z;
+        Normal[0, 3] = 1;
+        Normal = ConverterMesh.RotateFigureY(Normal, 1, yRot);
+        Vector3 dir = new Vector3(Normal[0, 0], Normal[0, 1], Normal[0, 2]);
+        //dir= FrontSide-Back
+
         R = new Vector3(0, yRot, 0);
 
-        if (offset) { T = FrontSide - Back - keys[key].direction + keys[key].direction * (myScript.Width); }
-        else { T = FrontSide - Back - keys[key].direction; }
+        //Debug.Log($"keys[{key}] = {keys[key].direction} , Direction = {FrontSide - Back}");
+        Debug.Log($"Dir = {dir}");
+        if (offset)
+        {
+            T = FrontSide - Back - keys[key].direction + keys[key].direction * (myScript.Width);
+            if (Equals(keys[key].direction, new Vector3(0, 0, 1)) || Equals(keys[key].direction, new Vector3(0, 0, -1)))
+            { T = new Vector3(T.x, T.y / 2, T.z / 2); }
+            if (Equals(keys[key].direction, new Vector3(1, 0, 0)) || Equals(keys[key].direction, new Vector3(-1, 0, 0)))
+            { T = new Vector3(T.x / 2, T.y / 2, T.z); }
+        }
+        else
+        {
+            T = FrontSide - Back - keys[key].direction;
 
-        if (Equals(keys[key].direction, new Vector3(0, 0, 1)) || Equals(keys[key].direction, new Vector3(0, 0, -1)))
-        { T = new Vector3(T.x, T.y / 2, T.z / 2); }
-        if (Equals(keys[key].direction, new Vector3(1, 0, 0)) || Equals(keys[key].direction, new Vector3(-1, 0, 0)))
-        { T = new Vector3(T.x / 2, T.y / 2, T.z); }
+            //T = new Vector3(T.x, T.y, T.z);
+            if (Equals(keys[key].direction, new Vector3(0, 0, 1)) || Equals(keys[key].direction, new Vector3(0, 0, -1)))
+            { T = new Vector3(T.x * (0.5f / myScript.Width), T.y / 2, T.z / 2); }
+            if (Equals(keys[key].direction, new Vector3(1, 0, 0)) || Equals(keys[key].direction, new Vector3(-1, 0, 0)))
+            { T = new Vector3(T.x / 2, T.y / 2, T.z*(0.5f/myScript.Width)); }
+
+        }
+        //else { T = FrontSide - Back + dir - dir * (myScript.Width); }
+
+        
         //T /= 2;
         if (T.y != 0) { T = new Vector3(T.x, (T.y - T.y / 2), T.z); }
         //if (T.y != 0) { T = new Vector3(T.x / 2, (T.y - T.y / 2) / 2, T.z / 2); }
@@ -191,7 +218,7 @@ public class RoomCreatorEditor : UnityEditor.Editor
         //T = new Vector3(T.x / wall.localScale.x, T.y / wall.localScale.y, T.z / wall.localScale.z);
         //S = new Vector3(1, 1, 1) - keys[Key1].direction;
         S = new Vector3(1, 1, 1) - new Vector3(Mathf.Abs(keys[key].direction.x), Mathf.Abs(keys[key].direction.y), Mathf.Abs(keys[key].direction.z));
-        Debug.Log($"S = {S}");
+        
         S = new Vector3(S.x * myScript.Width, S.y * myScript.Height, S.z * myScript.Width);
         if (S.x == 0) { S = new Vector3(1, S.y, S.z); }
         if (S.y == 0) { S = new Vector3(S.x, 1, S.z); }

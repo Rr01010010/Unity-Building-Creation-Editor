@@ -337,7 +337,7 @@ public class ConverterMesh : MonoBehaviour
 
     #region Translate Rotate & Scale
     #region RotateFigureAce
-    public float[,] RotateFigureX(float[,] Figure, int N, float rotate_deg)
+    public static float[,] RotateFigureX(float[,] Figure, int N, float rotate_deg)
     {
         float sin_value = Mathf.Sin(rotate_deg);
         float cos_value = Mathf.Cos(rotate_deg);
@@ -349,7 +349,7 @@ public class ConverterMesh : MonoBehaviour
 
         return UseConvertMatrix4x4(Figure, N, Convet);
     }
-    public float[,] RotateFigureY(float[,] Figure, int N, float rotate_deg)
+    public static float[,] RotateFigureY(float[,] Figure, int N, float rotate_deg)
     {
         float sin_value = Mathf.Sin(rotate_deg);
         float cos_value = Mathf.Cos(rotate_deg);
@@ -361,7 +361,7 @@ public class ConverterMesh : MonoBehaviour
 
         return UseConvertMatrix4x4(Figure, N, Convet);
     }
-    public float[,] RotateFigureZ(float[,] Figure, int N, float rotate_deg)
+    public static float[,] RotateFigureZ(float[,] Figure, int N, float rotate_deg)
     {
         float sin_value = Mathf.Sin(rotate_deg);
         float cos_value = Mathf.Cos(rotate_deg);
@@ -375,7 +375,7 @@ public class ConverterMesh : MonoBehaviour
     }
     #endregion
 
-    public float[,] TranslationFigure(float[,] Figure, int N, Vector3 trans)
+    public static float[,] TranslationFigure(float[,] Figure, int N, Vector3 trans)
     {
         double trans_X = trans.x,
                 trans_Y = trans.y,
@@ -389,7 +389,7 @@ public class ConverterMesh : MonoBehaviour
         return UseConvertMatrix4x4(Figure, N, Convet);
     }
 
-    public float[,] ScaleFigure(float[,] Figure, int N, Vector3 coeff)
+    public static float[,] ScaleFigure(float[,] Figure, int N, Vector3 coeff)
     {
         double Koef_X = coeff.x,
                 Koef_Y = coeff.y,
@@ -405,7 +405,7 @@ public class ConverterMesh : MonoBehaviour
     #endregion
 
     #region base
-    private float[,] UseConvertMatrix4x4(float[,] Figure, int N, float[,] Convet)
+    private static float[,] UseConvertMatrix4x4(float[,] Figure, int N, float[,] Convet)
     {
         float[,] vect_Figure_i;
         vect_Figure_i = new float[1, 4];
@@ -423,7 +423,7 @@ public class ConverterMesh : MonoBehaviour
         }
         return Figure;
     }
-    private float[,] MultiplyMatrix(float[,] Figure, float[,] Convet, int fig_x, int fig_y, int conv_x, int conv_y)
+    private static float[,] MultiplyMatrix(float[,] Figure, float[,] Convet, int fig_x, int fig_y, int conv_x, int conv_y)
     {
         if (fig_x != conv_y) { return null; }
         else
