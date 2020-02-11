@@ -6,12 +6,13 @@ using System.IO;
 using UnityEditor;
 using Unity.Collections;
 
-#region
-
+#region кастомный инспектор
 [UnityEditor.CustomEditor(typeof(RoomCreator))]
 public class RoomCreatorEditor : UnityEditor.Editor
 {
-    #region кастомный инспектор
+    private string ButtonName_FloorControllerBuilding = "Create FloorController";
+    private string ButtonName_FloorBuilding = "Building Floor";
+    #region Кнопки кастомного инспектора
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -22,7 +23,6 @@ public class RoomCreatorEditor : UnityEditor.Editor
         if (GUILayout.Button("Download ListNodes"))
         {
             string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
-
             if (File.Exists(path))
             {
                 try
@@ -41,67 +41,10 @@ public class RoomCreatorEditor : UnityEditor.Editor
                     Debug.LogWarning(e.Message);
                 }
             }
-            #region //Вроде как определение уровней здания
-            /*
-            myScript.LevelPosition = new List<Vector2>();
-            for (int i = 0; i < myScript.LinkNodes.Count; i++)
-            {
-                bool exist = false;
-
-                float Y = myScript.LinkNodes[i].NodePosition.y;
-                //if()
-                foreach (Vector2 elem in myScript.LevelPosition)
-                {
-                    if (Mathf.Approximately(elem.y, Y)) exist = true;
-                }
-                if (!exist) myScript.LevelPosition.Add(new Vector2(Y, Y));
-            }
-            */
-            #endregion
-
+            StoreysDefinition(myScript);
         }
         #endregion
-        #region //Button("Update Level Positions")
-        /*
-        if (GUILayout.Button("Update Level Positions"))
-        {
-            for (int i = 0; i < myScript.LinkNodes.Count; i++)
-            {
-                Debug.Log($"i = {i}");
-                int iOrigin = int.MaxValue;
-                for (int j = 0; j < myScript.LevelPosition.Count; j++)
-                {
-                    Debug.Log($"j = {j}");
-                    if (myScript.LinkNodes[i].NodePosition.y == myScript.LevelPosition[j].y) { iOrigin = j; j = int.MaxValue; j--; }
-                }
-
-                Debug.Log($"i_i = {i}");
-                Vector3 highground = myScript.LinkNodes[i].NodePosition;
-                highground.y = myScript.LevelPosition[iOrigin].x;
-
-                WallCreatorEditor.LinkNodeElement newLink = myScript.LinkNodes[i];
-                newLink.NodePosition = highground;
-                myScript.LinkNodes[i] = newLink;
-            }
-
-
-            myScript.LevelPosition.Clear();
-            for (int i = 0; i < myScript.LinkNodes.Count; i++)
-            {
-                bool exist = false;
-
-                float Y = myScript.LinkNodes[i].NodePosition.y;
-                //if()
-                foreach (Vector2 elem in myScript.LevelPosition)
-                {
-                    if (Mathf.Approximately(elem.y, Y)) exist = true;
-                }
-                if (!exist) myScript.LevelPosition.Add(new Vector2(Y, Y));
-            }
-        }
-        */
-        #endregion
-        if (GUILayout.Button("Build"))
+        if (GUILayout.Button("Build Rooms"))
         {
             #region удаляем и создаем новый контейнер
 
@@ -118,25 +61,65 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
             for (int i = 0; i < myScript.LinkNodes.Count; i++)
             {
-
-                for(int j = 0; j < myScript.LinkNodes[i].toNode.Count; j++)
+                for (int j = 0; j < myScript.LinkNodes[i].toNode.Count; j++)
                 {
-                    Transform wall = Instantiate(myScript.WallPrefab, (myScript.LinkNodes[i].NodePosition + myScript.LinkNodes[i].toNode[j] + new Vector3(0,myScript.Height,0)) / 2, Quaternion.identity,myScript.WallContainer);
+                    Transform wall = Instantiate(myScript.WallPrefab, (myScript.LinkNodes[i].NodePosition + myScript.LinkNodes[i].toNode[j] + new Vector3(0, myScript.Height, 0)) / 2, Quaternion.identity, myScript.WallContainer);
                     myScript.ConverterMesh.GetPolygonTree(wall.gameObject);
                     keys = myScript.ConverterMesh.GetKeys();
 
-                    
-                    /* ПРОСТАЯ растоновка стен
-                    wall.LookAt(myScript.LinkNodes[i].NodePosition + new Vector3(0, myScript.Height / 2, 0));
-                    wall.localScale = new Vector3(myScript.Width, myScript.Height, Vector3.Distance(myScript.LinkNodes[i].NodePosition, myScript.LinkNodes[i].toNode[j]) + myScript.Width);
-                    //*/
-                    InstantinateWallWithEditMesh(myScript, wall, myScript.LinkNodes[i].toNode[j], myScript.LinkNodes[i].NodePosition);
-                }                
 
+                    if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.WithMeshEdit) InstantinateWallWithEditMesh(myScript, wall, myScript.LinkNodes[i].toNode[j], myScript.LinkNodes[i].NodePosition);
+                    else if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.WithoutMeshEdit)
+                    {
+                        wall.LookAt(myScript.LinkNodes[i].NodePosition + new Vector3(0, myScript.Height / 2, 0));
+                        wall.localScale = new Vector3(myScript.Width, myScript.Height, Vector3.Distance(myScript.LinkNodes[i].NodePosition, myScript.LinkNodes[i].toNode[j]) + myScript.Width);
+                    }
+                    else if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.Combination)
+                    {
+                        int axiesChanges = 0;
+                        Vector3 vector = myScript.LinkNodes[i].NodePosition - myScript.LinkNodes[i].toNode[j];
+                        if (Mathf.Abs(vector.x) > 0) axiesChanges++; if (Mathf.Abs(vector.y) > 0) axiesChanges++; if (Mathf.Abs(vector.z) > 0) axiesChanges++;
+
+
+                        if (axiesChanges > 1) InstantinateWallWithEditMesh(myScript, wall, myScript.LinkNodes[i].toNode[j], myScript.LinkNodes[i].NodePosition);
+                        else
+                        {
+                            wall.LookAt(myScript.LinkNodes[i].NodePosition + new Vector3(0, myScript.Height / 2, 0));
+                            wall.localScale = new Vector3(myScript.Width, myScript.Height, Vector3.Distance(myScript.LinkNodes[i].NodePosition, myScript.LinkNodes[i].toNode[j]) + myScript.Width);
+                        }
+                    }
+                }
             }
+
+        }
+        if (GUILayout.Button(ButtonName_FloorControllerBuilding))
+        {
+            FloorManagerController manager = Instantiate(myScript.FloorManagerPrefab, Vector3.zero, Quaternion.identity);
+            myScript.FloorManagers.Add(manager.transform);
         }
     }
-    #endregion 
+    #endregion
+
+    #region Определение этажей здания
+    private void StoreysDefinition(RoomCreator myScript)
+    {
+        if (myScript.StoreysPositionY == null) myScript.StoreysPositionY = new List<float>();
+        else myScript.StoreysPositionY.Clear();
+
+        for (int i = 0; i < myScript.LinkNodes.Count; i++)
+        {
+            bool exist = false;
+            float Y = myScript.LinkNodes[i].NodePosition.y;
+
+            foreach (float y in myScript.StoreysPositionY)
+            {
+                if (Mathf.Approximately(y, Y)) exist = true;
+            }
+            if (!exist) myScript.StoreysPositionY.Add(Y);
+        }        
+    }
+    #endregion
+
 
     #region Special Mesh Data
     ConverterMesh.normal[] keys;
@@ -171,20 +154,9 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
 
         float yRot = ConverterMesh.AngleBtwVectors(keys[key].direction, FrontSide - Back, new Vector3(1, 0, 1));
-
-        float[,] Normal = new float[1, 4];
-        Normal[0, 0] = keys[key].direction.x;
-        Normal[0, 1] = keys[key].direction.y;
-        Normal[0, 2] = keys[key].direction.z;
-        Normal[0, 3] = 1;
-        Normal = ConverterMesh.RotateFigureY(Normal, 1, yRot);
-        Vector3 dir = new Vector3(Normal[0, 0], Normal[0, 1], Normal[0, 2]);
-        //dir= FrontSide-Back
-
+        
         R = new Vector3(0, yRot, 0);
 
-        //Debug.Log($"keys[{key}] = {keys[key].direction} , Direction = {FrontSide - Back}");
-        Debug.Log($"Dir = {dir}");
         if (offset)
         {
             T = FrontSide - Back - keys[key].direction + keys[key].direction * (myScript.Width);
@@ -197,26 +169,15 @@ public class RoomCreatorEditor : UnityEditor.Editor
         {
             T = FrontSide - Back - keys[key].direction;
 
-            //T = new Vector3(T.x, T.y, T.z);
             if (Equals(keys[key].direction, new Vector3(0, 0, 1)) || Equals(keys[key].direction, new Vector3(0, 0, -1)))
-            { T = new Vector3(T.x * (0.5f / myScript.Width), T.y / 2, T.z / 2); }
+            { T = new Vector3(T.x * myScript.Height * (0.25f / myScript.Width), T.y / 2, T.z / 2); }
             if (Equals(keys[key].direction, new Vector3(1, 0, 0)) || Equals(keys[key].direction, new Vector3(-1, 0, 0)))
-            { T = new Vector3(T.x / 2, T.y / 2, T.z*(0.5f/myScript.Width)); }
+            { T = new Vector3(T.x / 2, T.y / 2, T.z* myScript.Height * (0.25f/myScript.Width)); }
 
         }
-        //else { T = FrontSide - Back + dir - dir * (myScript.Width); }
 
-        
-        //T /= 2;
+
         if (T.y != 0) { T = new Vector3(T.x, (T.y - T.y / 2), T.z); }
-        //if (T.y != 0) { T = new Vector3(T.x / 2, (T.y - T.y / 2) / 2, T.z / 2); }
-        //else T /= 2;
-
-        //T = wallBeginning - wall.position;
-
-        //Debug.Log($"R = {R}, T= {T}");
-        //T = new Vector3(T.x / wall.localScale.x, T.y / wall.localScale.y, T.z / wall.localScale.z);
-        //S = new Vector3(1, 1, 1) - keys[Key1].direction;
         S = new Vector3(1, 1, 1) - new Vector3(Mathf.Abs(keys[key].direction.x), Mathf.Abs(keys[key].direction.y), Mathf.Abs(keys[key].direction.z));
         
         S = new Vector3(S.x * myScript.Width, S.y * myScript.Height, S.z * myScript.Width);
@@ -231,6 +192,21 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
 public class RoomCreator : MonoBehaviour
 {
+
+    public FloorManagerController FloorManagerPrefab;
+
+    public List<Transform> FloorManagers { get => _floorManagers; set => _floorManagers = value; }
+    private List<Transform> _floorManagers = new List<Transform>();
+
+    #region Data
+    public ClassNode PrefabFloorNode;
+    public List<ClassNode> FloorNodes { get => _floorNodes; set => _floorNodes = value; }
+    private List<ClassNode> _floorNodes;
+    public Transform ContainerNodeFloor { get => _containerNodeFloor; set => _containerNodeFloor = value; }
+    private Transform _containerNodeFloor;
+    
+    public enum statesBuilds { WithMeshEdit, Combination, WithoutMeshEdit }
+    public statesBuilds BuildWithMeshEditing = statesBuilds.WithMeshEdit;
     public ConverterMesh ConverterMesh;
     public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
     public string LevelName = "";
@@ -242,17 +218,17 @@ public class RoomCreator : MonoBehaviour
 
     public float Height;
     public float Width;
-    public List<WallCreatorEditor.LinkNodeElement> LinkNodes { get => _linkNodes; set { _linkNodes = value; count = _linkNodes.Count; } }
+    public List<WallCreatorEditor.LinkNodeElement> LinkNodes { get => _linkNodes; set { _linkNodes = value; } }
 
     public Transform WallContainer { get => _wallContainer; set => _wallContainer = value; }
-
-    [SerializeField] private Transform _wallContainer;
+    private Transform _wallContainer;
 
     [SerializeField] private List<WallCreatorEditor.LinkNodeElement> _linkNodes = new List<WallCreatorEditor.LinkNodeElement>();
-    //public List<Vector2> LevelPosition { get => _levelPosition; set => _levelPosition = value; }
-    //[SerializeField] private List<Vector2> _levelPosition = new List<Vector2>();
+    public List<float> StoreysPositionY { get => _levelPositionY; set => _levelPositionY = value; }
+    [SerializeField] private List<float> _levelPositionY = new List<float>();
+    #endregion
 
-    [SerializeField] private int count;
+
     #region Gizmos
 
     [Header("Gizmos")]
@@ -300,84 +276,33 @@ public class RoomCreator : MonoBehaviour
 
 
 
-                Gizmos.DrawLine(from + offset1+ offset3, to + offset1 + offset3);
+                Gizmos.DrawLine(from + offset1 + offset3, to + offset1 + offset3);
                 Gizmos.DrawLine(from + offset2 + offset3, to + offset2 + offset3);
 
                 Gizmos.DrawLine(from - offset1 + offset3, to - offset1 + offset3);
                 Gizmos.DrawLine(from - offset2 + offset3, to - offset2 + offset3);
 
-
-
-
-
-                //Gizmos.color = Color.red;
-                //Gizmos.DrawLine(LinkNodes[i].toNode[to_i] - new Vector3(semiW, 0, semiW), LinkNodes[i].toNode[to_i] + new Vector3(semiW, semiH, semiW));
             }
         }
 
 
-        //if (LinkNodes != null)
-        //for(int i = 0; i < LinkNodes.Count; i++)
     }
-    /*
-    private void DrawLinesOfPoints()
-    {
-        Gizmos.color = GizmoColors;
-        if (LinkNodes != null)
-        for (int i = 0; i < LinkNodes.Count; i++)
-        {
-            int iOrigin = int.MaxValue;
-            for (int j = 0; j < LevelPosition.Count; j++)
-            {
-                if (LinkNodes[i].NodePosition.y == LevelPosition[j].y) iOrigin = j;
-            }
-            if (iOrigin == int.MaxValue)
-            {
-                i = LinkNodes.Count;
-                Debug.LogError("Ошибка, оригинальная высота не была найдена. Перезаписываю LevelPosition с нуля");
-
-                LevelPosition = new List<Vector2>();
-
-                if (LinkNodes != null)
-                for (int j = 0; j < LinkNodes.Count; j++)
-                {
-                    bool exist = false;
-
-                    float Y = LinkNodes[j].NodePosition.y;
-                    //if()
-                    foreach (Vector2 elem in LevelPosition)
-                    {
-                        if (Mathf.Approximately(elem.y, Y)) exist = true;
-                    }
-                    if (!exist) LevelPosition.Add(new Vector2(Y, Y));
-                }
-            }
-
-
-            //if (LinkNodes[i].toNode != null)
-            foreach (Vector3 to in LinkNodes[i].toNode)
-            {
-                Gizmos.DrawLine(LinkNodes[i].NodePosition, to);
-                if (LinkNodes[i].NodePosition.y != LevelPosition[iOrigin].x)
-                {
-                    Vector3 from = LinkNodes[i].NodePosition;
-                    from.y = LevelPosition[iOrigin].x;
-
-                    Vector3 vect = to;
-                    vect.y = LevelPosition[iOrigin].x;
-
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawLine(from, vect);
-                    Gizmos.color = GizmoColors;
-                }
-            }
-        }
-    }
-    */
     #endregion
+    private void DrawRegion()
+    {
+        foreach (ClassNode node in FloorNodes)
+        {
+            for (int i = 0; i < node.Indexes.Count; i++)
+            {
+                Debug.DrawLine(node.transform.position, FloorNodes[node.Indexes[i]].transform.position,Color.blue);
+            }
+        }
+    }
     private void OnDrawGizmos()
     {
         DrawLinesOfPoints();
+        if (FloorNodes != null) DrawRegion();
+
     }
 
     #endregion

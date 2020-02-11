@@ -196,7 +196,7 @@ public class WallCreator : MonoBehaviour
 {
     public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
     public string LevelName = "";
-    public float HeightOfNewPoint;
+    
     //public int CountNode;
     public Transform PrefabNodeContainer;
     public NodeController PrefabNode;
@@ -282,23 +282,22 @@ public class WallCreator : MonoBehaviour
             }
         }
     }
-    public bool ShowRayBuilder = false;
+
 
     #region Inputs
+    
+    [SerializeField] private Vector3 offsetOfSightForDetect = new Vector3(0, 1, 0);
+
+
     void Update()
     {
-
-        #region отрисовка луча, который будет пересекать узлы
-        if (ShowRayBuilder) Debug.DrawLine(Camera.transform.position, MouseContol.Sight, SightColor);
-        #endregion
-
         #region Связывание узлов по нажатию
         if (Input.GetMouseButtonDown(0))
         {
             int mask = 1 << PrefabNode.gameObject.layer;
 
             RaycastHit hit;
-            Ray ray = new Ray(Camera.transform.position, MouseContol.Sight - Camera.transform.position);
+            Ray ray = new Ray(MouseContol.Sight + offsetOfSightForDetect, MouseContol.Sight - Camera.transform.position);
 
 
             if (Physics.Raycast(ray, out hit, Vector3.Distance(Camera.transform.position, MouseContol.Sight), mask))//, float.MaxValue, layer))
@@ -314,15 +313,23 @@ public class WallCreator : MonoBehaviour
         {
             if (NodeContainer == null) NodeContainer = Instantiate(PrefabNodeContainer, new Vector3(0, 0, 0), Quaternion.identity);
 
-            NodeController controller = Instantiate(PrefabNode, new Vector3(MouseContol.Sight.x, Camera.transform.position.y - HeightOfNewPoint, MouseContol.Sight.z), Quaternion.identity, NodeContainer);
-            controller.WCreator = this;
-            controller.Index = LinkNodes.Count;
+            bool exist = false;
+            foreach (LinkNodeElement element in LinkNodes)
+            {
+                if (Equals(element.myBox.transform.position, MouseContol.Sight)) exist = true;
+            }
+            if (exist == false)
+            {
+                NodeController controller = Instantiate(PrefabNode, MouseContol.Sight, Quaternion.identity, NodeContainer);
+                controller.WCreator = this;
+                controller.Index = LinkNodes.Count;
 
-            LinkNodeElement newElem = new LinkNodeElement();
-            newElem.myBox = controller;
-            newElem.save = false;
-            newElem.indexToNode = new List<int>();
-            LinkNodes.Add(newElem);
+                LinkNodeElement newElem = new LinkNodeElement();
+                newElem.myBox = controller;
+                newElem.save = false;
+                newElem.indexToNode = new List<int>();
+                LinkNodes.Add(newElem);
+            }            
         }
         #endregion
     }
@@ -333,18 +340,7 @@ public class WallCreator : MonoBehaviour
     [Header("Gizmos")]
 
     [SerializeField] private Color GizmoColors;
-    [SerializeField] private Color SightColor;
-    public float CellSize = 0.4f;
 
-    #region DrawSight
-    private void DrawSight()
-    {
-        Gizmos.color = SightColor;
-
-        Camera.transform.position = new Vector3(MouseContol.Sight.x, Camera.transform.position.y, MouseContol.Sight.z);
-        Gizmos.DrawCube(MouseContol.Sight, new Vector3(CellSize, CellSize, CellSize));
-    }
-    #endregion
     #region DrawLinesWithPoints
     private void DrawLinesOfPoints()
     {
@@ -361,7 +357,15 @@ public class WallCreator : MonoBehaviour
     }
     #endregion
 
-
+    public float CellSize = 0.25f;
+    //public Color SightColor;// { get; set; }
+    #region DrawSight
+    private void DrawSight()
+    {
+        Gizmos.color = GizmoColors;
+        Gizmos.DrawCube(MouseContol.Sight, new Vector3(CellSize, CellSize, CellSize));
+    }
+    #endregion
     private void OnDrawGizmos()
     {
         DrawLinesOfPoints();

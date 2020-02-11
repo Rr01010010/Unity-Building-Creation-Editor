@@ -55,34 +55,18 @@ public class NodeCreator : MonoBehaviour
 
     [SerializeField] private TopMouseControl MouseContol;
     [SerializeField] public List<Vector3> WallNodes = new List<Vector3>();
-    public Camera Camera;
-
     
 
-    public float SpeedMovement
-    {
-        get => _speedMovement;
-        set
-        {
-            if (_speedMovement <= 0) _speedMovement = 1;
-            else _speedMovement = value;
-        }
-    }
+    
 
     private float UpdateSens;
 
     #region Inputs
     void Update()
     {
-        ChangeSpeedOfCamera();
         CreateNodeOnClick();        
     }
 
-    private void ChangeSpeedOfCamera()
-    {
-        if (Input.GetKey(KeyCode.C)) { SpeedMovement++; }
-        if (Input.GetKey(KeyCode.X)) { SpeedMovement--; }
-    }
     
     private void CreateNodeOnClick()
     {
@@ -110,11 +94,10 @@ public class NodeCreator : MonoBehaviour
 
     #region Gizmos
     [Header("Gizmos")]
-    [SerializeField] private float _speedMovement;
     [SerializeField] private Color NodeColors;
     public float CellSize=1;
     public Vector3 GridSize = new Vector3(1280, 0, 720);
-    [SerializeField] private Color GridColor;
+    [SerializeField] private Color GridColor = Color.white;
     public Color AvailableLinks;
 
     #region DrawGrid
@@ -123,7 +106,8 @@ public class NodeCreator : MonoBehaviour
         Gizmos.color = GridColor;
         if (CellSize < 0.2f) CellSize = 0.2f;
         float x, y, z;
-        y = Camera.transform.position.y - GridSize.y;
+        //y = Camera.transform.position.y - GridSize.y;
+        y = GridSize.y;
 
         float semiGridSize_x = GridSize.x / 2, semiGridSize_z = GridSize.z / 2;
         for (x = CellSize/2; x <= semiGridSize_x; x += CellSize)
@@ -154,11 +138,9 @@ public class NodeCreator : MonoBehaviour
     private void DrawSight()
     {
         Gizmos.color = NodeColors;
-        Camera.transform.position = new Vector3(MouseContol.Sight.x, Camera.transform.position.y, MouseContol.Sight.z);
         Gizmos.DrawCube(MouseContol.Sight, new Vector3(CellSize, CellSize, CellSize));
     }
     #endregion
-
     #region DrawLinesWithPoints
     private void DrawLinesOfPoints()
     {
@@ -175,16 +157,13 @@ public class NodeCreator : MonoBehaviour
     #endregion
 
     private void OnDrawGizmos()
-    {
-        MouseContol.Sight = new Vector3(MouseContol.Sight.x, Camera.transform.position.y - GridSize.y, MouseContol.Sight.z);
+    {        
         DrawPoints();
         DrawGrid();
         DrawSight();
-
-        DrawLinesOfPoints(); //delete
+        DrawLinesOfPoints();
     }
     #endregion
-
 
 
     #region PathOfFileSystem
