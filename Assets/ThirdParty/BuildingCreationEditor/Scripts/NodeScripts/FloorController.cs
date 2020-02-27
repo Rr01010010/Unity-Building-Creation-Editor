@@ -5,7 +5,7 @@ using UnityEngine;
 #region custom editor button
 
 [UnityEditor.CustomEditor(typeof(FloorController))]
-public class ManagerRequest : UnityEditor.Editor
+public class FloorControllerRequest : UnityEditor.Editor
 {
     public override void OnInspectorGUI()
     {

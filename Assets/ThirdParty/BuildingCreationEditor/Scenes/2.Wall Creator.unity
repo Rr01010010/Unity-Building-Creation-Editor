@@ -9085,7 +9085,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PathToJsonsFolder: Assets/ThirdParty/BuildingCreationEditor/Jsons
-  LevelName: Cells
+  LevelName: Coursework
   PrefabNodeContainer: {fileID: 198259536450190158, guid: 33fce2e7c220bb04bb13b4c12cf298ee,
     type: 3}
   PrefabNode: {fileID: 7377622486968562264, guid: 7fea1c4c8ad17f34992558a5c32167b2,
@@ -9095,7 +9095,7 @@ MonoBehaviour:
   _nodeContainer: {fileID: 1938942940}
   offsetOfSightForDetect: {x: 0, y: 1, z: 0}
   GizmoColors: {r: 0.27450982, g: 0.8235294, b: 0.27450982, a: 1}
-  CellSize: 1
+  CellSize: 0.4
 --- !u!114 &1052616521
 MonoBehaviour:
   m_ObjectHideFlags: 0

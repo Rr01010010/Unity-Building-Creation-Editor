@@ -171,7 +171,6 @@ public class NodeCreator : MonoBehaviour
     {
         string path = ReturnPathToJsonFile(pathToJsonsFolder, levelName, nameOfFile);
 
-        Debug.Log(path);
         using (StreamWriter sw = File.CreateText(path))
         {
             sw.WriteLine(serializelist);
@@ -188,6 +187,31 @@ public class NodeCreator : MonoBehaviour
         }
         path = System.IO.Path.Combine(path, nameOfFile);
         return path.Replace('/', @"\"[0]);
+    }
+    public static string ReadFile(string pathToJsonsFolder,string levelName, string nameFile) 
+    {
+
+        string path = ReturnPathToJsonFile(pathToJsonsFolder, levelName, nameFile);
+        if (File.Exists(path))
+        {
+            try
+            {
+                using (StreamReader sr = new StreamReader(path))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
+            catch (IOException e)
+            {
+                Debug.LogError("The file could not be read: " + e.Message);
+                return null;
+            }
+        }
+        else return null;
+    }
+    public static T ReadAndDeserializeFile<T>(string pathToJsonsFolder, string levelName, string nameFile) 
+    {
+        return JsonConvert.DeserializeObject<T>(ReadFile(pathToJsonsFolder, levelName, nameFile));
     }
     #endregion
 }

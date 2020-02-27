@@ -24,7 +24,7 @@ public class ConverterMesh : MonoBehaviour
             }
             return null;
         }
-        public normal(Vector3 direction,int iPolygonKeys)
+        public normal(Vector3 direction, int iPolygonKeys)
         { this.direction = direction; this.iPolygonKeys = iPolygonKeys; }
         public int iPolygonKeys;
         public Vector3 direction;

@@ -22,25 +22,7 @@ public class RoomCreatorEditor : UnityEditor.Editor
         #region Кнопка загрузки данных о точках - данные о началах стен и концах стен
         if (GUILayout.Button("Download ListNodes"))
         {
-            string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
-            if (File.Exists(path))
-            {
-                try
-                {
-                    using (StreamReader sr = new StreamReader(path))
-                    {
-                        if (myScript.LinkNodes != null) myScript.LinkNodes.Clear();
-
-                        string line = sr.ReadToEnd();
-                        myScript.LinkNodes = JsonConvert.DeserializeObject<List<WallCreatorEditor.LinkNodeElement>>(line);
-                    }
-                }
-                catch (IOException e)
-                {
-                    Debug.LogWarning("The file could not be read:");
-                    Debug.LogWarning(e.Message);
-                }
-            }
+            ListNodesDownload(myScript);
             StoreysDefinition(myScript);
         }
         #endregion
@@ -90,6 +72,10 @@ public class RoomCreatorEditor : UnityEditor.Editor
                     }
                 }
             }
+            if(myScript.BuildWithMeshEditing != RoomCreator.statesBuilds.WithoutMeshEdit) 
+            {
+                SaveAndLoadAssetWithMenu.DownloadMeshes_andSaveRooms(myScript);
+            }
 
         }
         if (GUILayout.Button(ButtonName_FloorControllerBuilding))
@@ -100,7 +86,19 @@ public class RoomCreatorEditor : UnityEditor.Editor
     }
     #endregion
 
-    #region Определение этажей здания
+    #region Метод загрузки данных о точках - ListNodesDownload
+    private void ListNodesDownload(RoomCreator manager) 
+    {
+        if (manager.LinkNodes != null) manager.LinkNodes.Clear();
+
+        string line = NodeCreator.ReadFile(manager.PathToJsonsFolder, manager.LevelName, "ListNodes.txt");
+        if (line != null)
+        {
+            manager.LinkNodes = JsonConvert.DeserializeObject<List<WallCreatorEditor.LinkNodeElement>>(line);
+        }
+    }
+    #endregion
+    #region Метод определения этажей здания StoreysDefinition
     private void StoreysDefinition(RoomCreator myScript)
     {
         if (myScript.StoreysPositionY == null) myScript.StoreysPositionY = new List<float>();
@@ -116,7 +114,7 @@ public class RoomCreatorEditor : UnityEditor.Editor
                 if (Mathf.Approximately(y, Y)) exist = true;
             }
             if (!exist) myScript.StoreysPositionY.Add(Y);
-        }        
+        }
     }
     #endregion
 
@@ -147,14 +145,14 @@ public class RoomCreatorEditor : UnityEditor.Editor
         myScript.ConverterMesh.PolygonTransformation(keys[Key1], T, R, S);
         myScript.ConverterMesh.PolygonTransformation(keys[Key2], t, r, s);
     }
-    public int SidesChange(ref Vector3 T, ref Vector3 R, ref Vector3 S, RoomCreator myScript,Vector3 FrontSide, Vector3 Back,bool offset = true) 
+    public int SidesChange(ref Vector3 T, ref Vector3 R, ref Vector3 S, RoomCreator myScript, Vector3 FrontSide, Vector3 Back, bool offset = true)
     {
         int key = myScript.ConverterMesh.NearestKeySearch(FrontSide - Back);
-        Debug.Log($"keys[{key}] = {keys[key].direction} , Direction = {FrontSide - Back} wB={FrontSide}, wE={Back}");
+        //Debug.Log($"keys[{key}] = {keys[key].direction} , Direction = {FrontSide - Back} wB={FrontSide}, wE={Back}");
 
 
         float yRot = ConverterMesh.AngleBtwVectors(keys[key].direction, FrontSide - Back, new Vector3(1, 0, 1));
-        
+
         R = new Vector3(0, yRot, 0);
 
         if (offset)
@@ -172,14 +170,14 @@ public class RoomCreatorEditor : UnityEditor.Editor
             if (Equals(keys[key].direction, new Vector3(0, 0, 1)) || Equals(keys[key].direction, new Vector3(0, 0, -1)))
             { T = new Vector3(T.x * myScript.Height * (0.25f / myScript.Width), T.y / 2, T.z / 2); }
             if (Equals(keys[key].direction, new Vector3(1, 0, 0)) || Equals(keys[key].direction, new Vector3(-1, 0, 0)))
-            { T = new Vector3(T.x / 2, T.y / 2, T.z* myScript.Height * (0.25f/myScript.Width)); }
+            { T = new Vector3(T.x / 2, T.y / 2, T.z * myScript.Height * (0.25f / myScript.Width)); }
 
         }
 
 
         if (T.y != 0) { T = new Vector3(T.x, (T.y - T.y / 2), T.z); }
         S = new Vector3(1, 1, 1) - new Vector3(Mathf.Abs(keys[key].direction.x), Mathf.Abs(keys[key].direction.y), Mathf.Abs(keys[key].direction.z));
-        
+
         S = new Vector3(S.x * myScript.Width, S.y * myScript.Height, S.z * myScript.Width);
         if (S.x == 0) { S = new Vector3(1, S.y, S.z); }
         if (S.y == 0) { S = new Vector3(S.x, 1, S.z); }
@@ -202,13 +200,14 @@ public class RoomCreator : MonoBehaviour
     public ClassNode PrefabFloorNode;
     public List<ClassNode> FloorNodes { get => _floorNodes; set => _floorNodes = value; }
     private List<ClassNode> _floorNodes;
-    public Transform ContainerNodeFloor { get => _containerNodeFloor; set => _containerNodeFloor = value; }
-    private Transform _containerNodeFloor;
-    
+    //public Transform ContainerNodeFloor { get => _containerNodeFloor; set => _containerNodeFloor = value; }
+    //private Transform _containerNodeFloor;
+
     public enum statesBuilds { WithMeshEdit, Combination, WithoutMeshEdit }
     public statesBuilds BuildWithMeshEditing = statesBuilds.WithMeshEdit;
     public ConverterMesh ConverterMesh;
-    public string PathToJsonsFolder = "Assets/ThirdParty/RoomCreationSystem/Jsons";
+    public string PathToJsonsFolder = "Assets/ThirdParty/BuildingCreationEditor/Jsons";
+    public string PathToAssetBundle = "Assets/ThirdParty/BuildingCreationEditor/AssetBundle";
     public string LevelName = "";
 
     public Transform WallPrefab { get => _wallPrefab_1x1x1; set => _wallPrefab_1x1x1 = value; }
@@ -252,7 +251,7 @@ public class RoomCreator : MonoBehaviour
         {
 
             Vector3 from = LinkNodes[i].NodePosition;
-            Vector3 offset1 = new Vector3(semiW, 0, semiW); 
+            Vector3 offset1 = new Vector3(semiW, 0, semiW);
             Vector3 offset2 = new Vector3(semiW, 0, -semiW);
             Vector3 offset3 = new Vector3(0, Height, 0);
 
@@ -260,11 +259,11 @@ public class RoomCreator : MonoBehaviour
             Vector3 offsetz = new Vector3(0, 0, Width);
             Vector3 offsetx = new Vector3(Width, 0, 0);
 
-            for (int to_i=0;to_i< LinkNodes[i].toNode.Count; to_i++)
+            for (int to_i = 0; to_i < LinkNodes[i].toNode.Count; to_i++)
             {
                 Gizmos.color = GizmoColors;
 
-                
+
                 Vector3 to = LinkNodes[i].toNode[to_i];
 
                 Gizmos.DrawLine(from + offset1, to + offset1);
@@ -294,7 +293,7 @@ public class RoomCreator : MonoBehaviour
         {
             for (int i = 0; i < node.Indexes.Count; i++)
             {
-                Debug.DrawLine(node.transform.position, FloorNodes[node.Indexes[i]].transform.position,Color.blue);
+                Debug.DrawLine(node.transform.position, FloorNodes[node.Indexes[i]].transform.position, Color.blue);
             }
         }
     }

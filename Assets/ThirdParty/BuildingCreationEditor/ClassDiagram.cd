@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="ConverterMesh">
+    <Position X="8.25" Y="6.5" Width="3.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Class Name="ConverterMesh.normal">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\CommonScripts\ConverterMesh.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+      <Class Name="ConverterMesh.vertex">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\CommonScripts\ConverterMesh.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAYAAAACAAAAAgACAQAAAAABCARABAARAFAAABEYiE=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\CommonScripts\ConverterMesh.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TopMouseControl">
+    <Position X="13.5" Y="13.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>ADQCAAAAACAAAAAQACAAAAAAABAAAACAAAgACAAAQAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\CommonScripts\TopMouseControl.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NodeCreatorEditor">
+    <Position X="0.5" Y="7.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NodeCreator">
+    <Position X="0.5" Y="9.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>oCQGCAAAACAAAAAAAAAAAAUAYECAAAAAEEAACAIAAgA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ClassNode">
+    <Position X="13.25" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAAAAgAAAAAAAAAAAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\ClassNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FloorControllerRequest">
+    <Position X="16" Y="8" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\FloorController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FloorController">
+    <Position X="14.25" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAQEAEgADAAAAAAAAAAAIAAQAAAAAAAAACAQBAFACAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\FloorController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FloorManagerController">
+    <Position X="12" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAgAAAAAAAAABAQIAAAAAAAAAAAAAAQAAEAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\FloorManagerController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="LinkingRequest">
+    <Position X="17.75" Y="14.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\NodeController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="NodeController">
+    <Position X="17.75" Y="15.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAABAAAAAgAAAAAIAAAAAAAAEAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\NodeScripts\NodeController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RoomCreatorEditor">
+    <Position X="5.5" Y="6.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAYAgAAAAAACAAAAAAAAAAACBAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\RoomCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RoomCreator">
+    <Position X="5.5" Y="9.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Enum Name="RoomCreator.statesBuilds">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\RoomCreator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAEAAQCnAgAAAAAABAAAEAAYAGEQIgQEkACAEAAKAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\RoomCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WallCreatorEditor">
+    <Position X="2.75" Y="5.25" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="WallCreatorEditor.LinkNodeElement">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\WallCreator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAgABAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\WallCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WallCreator">
+    <Position X="2.75" Y="9.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <NestedTypes>
+      <Struct Name="WallCreator.LinkNodeElement">
+        <TypeIdentifier>
+          <NewMemberFileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\WallCreator.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ACQmAAACAAAAAAAACAAAABACQECEAAgEkEAAAAAAAAA=</HashCode>
+      <FileName>Assets\ThirdParty\BuildingCreationEditor\Scripts\WallCreator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

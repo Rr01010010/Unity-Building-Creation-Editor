@@ -17,6 +17,7 @@ public class WallCreatorEditor : UnityEditor.Editor
         DrawDefaultInspector();
 
         WallCreator myScript = (WallCreator)target;
+        #region Download Nodes
         if (GUILayout.Button("Download Nodes"))
         {
             string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "Nodes.txt");
@@ -65,6 +66,8 @@ public class WallCreatorEditor : UnityEditor.Editor
                 }
             }
         }
+        #endregion
+        #region Save ListNodes
         if (GUILayout.Button("Save ListNodes"))
         {
             List<LinkNodeElement> ThirdStageLinks = new List<LinkNodeElement>();
@@ -89,7 +92,9 @@ public class WallCreatorEditor : UnityEditor.Editor
 
             NodeCreator.WriteJsonAtJsonsFolder(serializelist, myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
 
-        } 
+        }
+        #endregion
+        #region Download ListNodes
         if (GUILayout.Button("Download ListNodes")) 
         {
             string path = NodeCreator.ReturnPathToJsonFile(myScript.PathToJsonsFolder, myScript.LevelName, "ListNodes.txt");
@@ -180,10 +185,10 @@ public class WallCreatorEditor : UnityEditor.Editor
                 }
             }
         }
+        #endregion
     }
     public struct LinkNodeElement
     {
-
         [JsonProperty("toNode")]
         public List<Vector3> toNode { get; set; }
 
@@ -224,7 +229,8 @@ public class WallCreator : MonoBehaviour
         get => _targetnode;
         set
         {
-            if (LinkNodes == null || LinkNodes.Count < NodeContainer.childCount) { Debug.LogError("LinkNodes is empty, please, download nodes"); }
+            if (LinkNodes == null || LinkNodes.Count < NodeContainer.childCount) 
+            { Debug.LogError("LinkNodes is empty, please, download nodes"); }
 
             if (_targetnode == null) _targetnode = value;
             else if (_targetnode.Index != value.Index)
