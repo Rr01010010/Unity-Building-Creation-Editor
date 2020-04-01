@@ -19,65 +19,14 @@ public class RoomCreatorEditor : UnityEditor.Editor
 
         RoomCreator myScript = (RoomCreator)target;
 
-        #region Кнопка загрузки данных о точках - данные о началах стен и концах стен
-        if (GUILayout.Button("Download ListNodes"))
+        #region Кнопка загрузки данных о точках и создания комнат на основе данных
+        if (GUILayout.Button("Download ListNodes & Build Rooms"))
         {
             ListNodesDownload(myScript);
             StoreysDefinition(myScript);
+            BuildingRooms(myScript);
         }
         #endregion
-        if (GUILayout.Button("Build Rooms"))
-        {
-            #region удаляем и создаем новый контейнер
-
-            if (myScript.WallContainer != null)
-            {
-                while (myScript.WallContainer.childCount > 0)
-                {
-                    DestroyImmediate(myScript.WallContainer.GetChild(0).gameObject);
-                }
-                DestroyImmediate(myScript.WallContainer.gameObject);
-            }
-            myScript.WallContainer = Instantiate(myScript.PrefabNodeContainer, new Vector3(0, 0, 0), Quaternion.identity);
-            #endregion
-
-            for (int i = 0; i < myScript.LinkNodes.Count; i++)
-            {
-                for (int j = 0; j < myScript.LinkNodes[i].toNode.Count; j++)
-                {
-                    Transform wall = Instantiate(myScript.WallPrefab, (myScript.LinkNodes[i].NodePosition + myScript.LinkNodes[i].toNode[j] + new Vector3(0, myScript.Height, 0)) / 2, Quaternion.identity, myScript.WallContainer);
-                    myScript.ConverterMesh.GetPolygonTree(wall.gameObject);
-                    keys = myScript.ConverterMesh.GetKeys();
-
-
-                    if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.WithMeshEdit) InstantinateWallWithEditMesh(myScript, wall, myScript.LinkNodes[i].toNode[j], myScript.LinkNodes[i].NodePosition);
-                    else if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.WithoutMeshEdit)
-                    {
-                        wall.LookAt(myScript.LinkNodes[i].NodePosition + new Vector3(0, myScript.Height / 2, 0));
-                        wall.localScale = new Vector3(myScript.Width, myScript.Height, Vector3.Distance(myScript.LinkNodes[i].NodePosition, myScript.LinkNodes[i].toNode[j]) + myScript.Width);
-                    }
-                    else if (myScript.BuildWithMeshEditing == RoomCreator.statesBuilds.Combination)
-                    {
-                        int axiesChanges = 0;
-                        Vector3 vector = myScript.LinkNodes[i].NodePosition - myScript.LinkNodes[i].toNode[j];
-                        if (Mathf.Abs(vector.x) > 0) axiesChanges++; if (Mathf.Abs(vector.y) > 0) axiesChanges++; if (Mathf.Abs(vector.z) > 0) axiesChanges++;
-
-
-                        if (axiesChanges > 1) InstantinateWallWithEditMesh(myScript, wall, myScript.LinkNodes[i].toNode[j], myScript.LinkNodes[i].NodePosition);
-                        else
-                        {
-                            wall.LookAt(myScript.LinkNodes[i].NodePosition + new Vector3(0, myScript.Height / 2, 0));
-                            wall.localScale = new Vector3(myScript.Width, myScript.Height, Vector3.Distance(myScript.LinkNodes[i].NodePosition, myScript.LinkNodes[i].toNode[j]) + myScript.Width);
-                        }
-                    }
-                }
-            }
-            if(myScript.BuildWithMeshEditing != RoomCreator.statesBuilds.WithoutMeshEdit) 
-            {
-                SaveAndLoadAssetWithMenu.DownloadMeshes_andSaveRooms(myScript);
-            }
-
-        }
         if (GUILayout.Button(ButtonName_FloorControllerBuilding))
         {
             FloorManagerController manager = Instantiate(myScript.FloorManagerPrefab, Vector3.zero, Quaternion.identity);
@@ -117,7 +66,60 @@ public class RoomCreatorEditor : UnityEditor.Editor
         }
     }
     #endregion
+    #region Метод построения здания
+    private void BuildingRooms(RoomCreator manager) 
+    {
 
+        #region удаляем и создаем новый контейнер
+
+        if (manager.WallContainer != null)
+        {
+            while (manager.WallContainer.childCount > 0)
+            {
+                DestroyImmediate(manager.WallContainer.GetChild(0).gameObject);
+            }
+            DestroyImmediate(manager.WallContainer.gameObject);
+        }
+        manager.WallContainer = Instantiate(manager.PrefabNodeContainer, new Vector3(0, 0, 0), Quaternion.identity);
+        #endregion
+
+        for (int i = 0; i < manager.LinkNodes.Count; i++)
+        {
+            for (int j = 0; j < manager.LinkNodes[i].toNode.Count; j++)
+            {
+                Transform wall = Instantiate(manager.WallPrefab, (manager.LinkNodes[i].NodePosition + manager.LinkNodes[i].toNode[j] + new Vector3(0, manager.Height, 0)) / 2, Quaternion.identity, manager.WallContainer);
+                manager.ConverterMesh.GetPolygonTree(wall.gameObject);
+                keys = manager.ConverterMesh.GetKeys();
+
+
+                if (manager.BuildWithMeshEditing == RoomCreator.statesBuilds.WithMeshEdit) InstantinateWallWithEditMesh(manager, wall, manager.LinkNodes[i].toNode[j], manager.LinkNodes[i].NodePosition);
+                else if (manager.BuildWithMeshEditing == RoomCreator.statesBuilds.WithoutMeshEdit)
+                {
+                    wall.LookAt(manager.LinkNodes[i].NodePosition + new Vector3(0, manager.Height / 2, 0));
+                    wall.localScale = new Vector3(manager.Width, manager.Height, Vector3.Distance(manager.LinkNodes[i].NodePosition, manager.LinkNodes[i].toNode[j]) + manager.Width);
+                }
+                else if (manager.BuildWithMeshEditing == RoomCreator.statesBuilds.Combination)
+                {
+                    int axiesChanges = 0;
+                    Vector3 vector = manager.LinkNodes[i].NodePosition - manager.LinkNodes[i].toNode[j];
+                    if (Mathf.Abs(vector.x) > 0) axiesChanges++; if (Mathf.Abs(vector.y) > 0) axiesChanges++; if (Mathf.Abs(vector.z) > 0) axiesChanges++;
+
+
+                    if (axiesChanges > 1) InstantinateWallWithEditMesh(manager, wall, manager.LinkNodes[i].toNode[j], manager.LinkNodes[i].NodePosition);
+                    else
+                    {
+                        wall.LookAt(manager.LinkNodes[i].NodePosition + new Vector3(0, manager.Height / 2, 0));
+                        wall.localScale = new Vector3(manager.Width, manager.Height, Vector3.Distance(manager.LinkNodes[i].NodePosition, manager.LinkNodes[i].toNode[j]) + manager.Width);
+                    }
+                }
+            }
+        }
+        if (manager.BuildWithMeshEditing != RoomCreator.statesBuilds.WithoutMeshEdit)
+        {
+            SaveAndLoadAssetWithMenu.DownloadMeshes_andSaveRooms(manager);
+        }
+    }
+    #endregion
 
     #region Special Mesh Data
     ConverterMesh.normal[] keys;

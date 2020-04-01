@@ -20,15 +20,20 @@ public class SaveAndLoadAssetWithMenu : EditorWindow
         contextMenu.Show();
     }
 
-    Object wallPrefab;
-    Object wallContainer;
+    public Object wallPrefab;
+    public Object wallContainer;
+    public string PathToAssetBundle = "Assets/ThirdParty/BuildingCreationEditor/AssetBundle";
+    public string LevelName = "";
     private void OnGUI()
     {
         GUILayout.Label("Base Settings", EditorStyles.boldLabel);
         wallPrefab = EditorGUILayout.ObjectField(wallPrefab, typeof(MeshFilter), true);
         wallContainer = EditorGUILayout.ObjectField(wallContainer, typeof(Transform), true);
+        PathToAssetBundle = EditorGUILayout.TextField("Path to folder", PathToAssetBundle);
+        LevelName = EditorGUILayout.TextField("Name of Level", LevelName);
 
-        if (GUILayout.Button("InstantinateRooms")) LoadMeshes_andInstantinateRooms((MeshFilter)wallPrefab,(Transform)wallContainer);
+        //if (GUILayout.Button("InstantinateRooms")) LoadMeshes_andInstantinateRooms((MeshFilter)wallPrefab,(Transform)wallContainer);
+        if (GUILayout.Button("InstantinateRooms")) LoadMeshes_andInstantinateRooms(this);
     }
 
     public static void DownloadMeshes_andSaveRooms(RoomCreator manager)
@@ -52,7 +57,7 @@ public class SaveAndLoadAssetWithMenu : EditorWindow
         string transformsStr;
         DeserializeTransform transforms;
         MeshFilter instaniatedObj;
-        Mesh mesh = (Mesh)AssetDatabase.LoadAssetAtPath("Assets/ThirdParty/BuildingCreationEditor/AssetBundle/Test/0.asset",typeof(Mesh));
+        Mesh mesh = (Mesh)AssetDatabase.LoadAssetAtPath($"/Test/0.asset",typeof(Mesh));
         for (int i = 0; mesh != null; i++)
         {
             if (i != 0) mesh = AssetDatabase.LoadAssetAtPath<Mesh>($"Assets/ThirdParty/BuildingCreationEditor/AssetBundle/Test/{i}.asset");
@@ -66,6 +71,27 @@ public class SaveAndLoadAssetWithMenu : EditorWindow
                 instaniatedObj.gameObject.name = i.ToString();
                 instaniatedObj.gameObject.GetComponent<MeshCollider>().sharedMesh = mesh;
             }            
+        }
+    }
+    public static void LoadMeshes_andInstantinateRooms(SaveAndLoadAssetWithMenu dates)
+    {
+        string transformsStr;
+        DeserializeTransform transforms;
+        MeshFilter instaniatedObj;
+        Mesh mesh = (Mesh)AssetDatabase.LoadAssetAtPath($"{dates.PathToAssetBundle}/{dates.LevelName}/0.asset", typeof(Mesh));
+        for (int i = 0; mesh != null; i++)
+        {
+            if (i != 0) mesh = AssetDatabase.LoadAssetAtPath<Mesh>($"{dates.PathToAssetBundle}/{dates.LevelName}/{i}.asset");
+            if (mesh != null)
+            {
+                transformsStr = NodeCreator.ReadFile(dates.PathToAssetBundle, dates.LevelName, $"{i}.txt");
+                transforms = JsonConvert.DeserializeObject<DeserializeTransform>(transformsStr);
+                instaniatedObj = Instantiate((MeshFilter)dates.wallPrefab, transforms.P, Quaternion.Euler(transforms.R), (Transform)dates.wallContainer);
+                instaniatedObj.transform.localScale = transforms.S;
+                instaniatedObj.mesh = mesh;
+                instaniatedObj.gameObject.name = i.ToString();
+                instaniatedObj.gameObject.GetComponent<MeshCollider>().sharedMesh = mesh;
+            }
         }
     }
 }

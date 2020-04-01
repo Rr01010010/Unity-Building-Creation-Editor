@@ -214,8 +214,6 @@ public class WallCreator : MonoBehaviour
     public struct LinkNodeElement
     {
         [JsonProperty("save")] public bool save { get; set; }
-        //[JsonProperty("toNode")] public List<Vector3> toNode { get; set; }
-        //[JsonProperty("NodePosition")] public Vector3 NodePosition { get; set; }
         [JsonProperty("indexToNode")] public List<int> indexToNode { get; set; }
         [JsonIgnore] public NodeController myBox { get; set; }
     }
